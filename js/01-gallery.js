@@ -22,31 +22,26 @@ function galleryMarkup(galleryItems) {
     .join("");
 }
 const createGallery = galleryMarkup(galleryItems);
-// console.log(galleryMarkup(galleryItems));
 elemDiv.insertAdjacentHTML("beforeend", createGallery);
-// const clickGallery = document.querySelectorAll(".gallery__link");
-// console.log(clickGallery);
-// elemDiv.addEventListener("click", onClickLightBox);
-// function onClickLightBox(e) {
-//   e.preventDefault();
-// clickGallery.setAttribute("data-lightbox", "roadtrip");
-// }
-elemDiv.onclick = (e) => {
-  e.preventDefault();
-  basicLightbox
-    .create(
-      `
-		<img width="1400" height="900" src="https://cdn.pixabay.com/photo/2019/05/16/09/47/beach-4206785_1280.jpg">
-	`
-    )
-    .show();
+let elem;
+const handleClick = (event) => {
+  if (event.target.tagName === "IMG") {
+    event.preventDefault();
+    elem = basicLightbox.create(
+      `<img src=${event.target.getAttribute("data-source")} />`,
+      {
+        onShow: (elem) => {
+          const listener = (event) => {
+            if (event.key === "Escape") {
+              elem.close();
+              elemDiv.removeEventListener("keyup", listener);
+            }
+          };
+          elemDiv.addEventListener("keyup", listener);
+        },
+      }
+    );
+    elem.show();
+  }
 };
-// document.querySelector(".gallery__image").onclick = () => {
-//   basicLightbox
-//     .create(
-//       `
-// 		<img width="1400" height="900" src="https://placehold.it/1400x900">
-// 	`
-//     )
-//     .show();
-// };
+elemDiv.addEventListener("click", handleClick);
